@@ -35,15 +35,12 @@ export default function TriagePage() {
 
       mediaRecorder.onstop = async () => {
         stream.getTracks().forEach(t => t.stop());
-        // For the demo, we use the Web Speech API for transcription
-        // In production, we'd send audio to Gemini
-        setDescription(prev => prev || 'Patient found under collapsed debris. Complaining of severe chest pain and difficulty breathing. Visible laceration on left arm with active bleeding. Unable to move lower extremities.');
       };
 
       mediaRecorder.start();
       setIsRecording(true);
 
-      // Also try Web Speech API for real-time transcription
+      // Use Web Speech API for real-time transcription
       if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const recognition = new SpeechRecognition();
@@ -51,15 +48,22 @@ export default function TriagePage() {
         recognition.interimResults = true;
         recognition.lang = 'en-US';
         
+        let finalTranscript = '';
         recognition.onresult = (event) => {
-          let transcript = '';
-          for (let i = 0; i < event.results.length; i++) {
-            transcript += event.results[i][0].transcript;
+          let interim = '';
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            if (event.results[i].isFinal) {
+              finalTranscript += event.results[i][0].transcript + ' ';
+            } else {
+              interim += event.results[i][0].transcript;
+            }
           }
-          if (transcript.trim()) setDescription(transcript);
+          setDescription(finalTranscript + interim);
         };
         
-        recognition.onerror = () => {};
+        recognition.onerror = (e) => {
+          console.warn('Speech recognition error:', e.error);
+        };
         recognition.start();
         mediaRecorderRef.current._recognition = recognition;
       }
