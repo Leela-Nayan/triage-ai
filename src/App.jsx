@@ -5,7 +5,8 @@ import TriagePage from './pages/TriagePage';
 import PatientsPage from './pages/PatientsPage';
 import ResourcesPage from './pages/ResourcesPage';
 import MapPage from './pages/MapPage';
-import { Activity, Users, Stethoscope, LayoutDashboard, Map, Package, Menu, X } from 'lucide-react';
+import AmbulancePage from './pages/AmbulancePage';
+import { Activity, Users, Stethoscope, LayoutDashboard, Map, Package, Menu, X, Siren } from 'lucide-react';
 
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -16,6 +17,7 @@ export default function App() {
     { path: '/triage', icon: Stethoscope, label: 'New Triage' },
     { path: '/patients', icon: Users, label: 'Patients' },
     { path: '/resources', icon: Package, label: 'Resources' },
+    { path: '/ambulance', icon: Siren, label: 'Ambulance' },
     { path: '/map', icon: Map, label: 'Hospital Map' },
   ];
 
@@ -89,6 +91,7 @@ export default function App() {
           <Route path="/triage" element={<TriagePage />} />
           <Route path="/patients" element={<PatientsPage />} />
           <Route path="/resources" element={<ResourcesPage />} />
+          <Route path="/ambulance" element={<AmbulancePage />} />
           <Route path="/map" element={<MapPage />} />
         </Routes>
       </main>
