@@ -77,7 +77,7 @@ TriageAI provides:
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/triage-ai.git
+git clone https://github.com/Leela-Nayan/triage-ai.git
 
 # Install dependencies
 cd triage-ai
@@ -101,8 +101,10 @@ npm run dev
 
 ## 👥 Team
 
-- **Team Name:** [Your Team Name]
-- **Team Leader:** [Your Name]
+- **Team Name:** Overwatch
+- **Team Leader:** Leela Nayan K.P.
+- Rushikesh Yadav Vadlakonda
+- Y. Rithwik
 
 ## 📄 License
 
