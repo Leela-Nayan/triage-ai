@@ -14,6 +14,24 @@ function getModel() {
   return model;
 }
 
+// Retry helper for 429 rate limit errors
+async function withRetry(fn, maxRetries = 3) {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      const is429 = err?.status === 429 || err?.message?.includes('429') || err?.message?.includes('quota') || err?.message?.includes('RESOURCE_EXHAUSTED');
+      if (is429 && attempt < maxRetries - 1) {
+        const delay = Math.pow(2, attempt) * 1500; // 1.5s, 3s, 6s
+        console.warn(`Gemini rate limited (429). Retrying in ${delay}ms... (attempt ${attempt + 1}/${maxRetries})`);
+        await new Promise(r => setTimeout(r, delay));
+      } else {
+        throw err;
+      }
+    }
+  }
+}
+
 /**
  * Analyze injury description (voice transcript or text) and classify severity
  */
@@ -49,7 +67,7 @@ Severity Classification Rules:
 - BLACK (Deceased/Expectant): No signs of life or injuries incompatible with survival given available resources.`;
 
   try {
-    const result = await m.generateContent(prompt);
+    const result = await withRetry(() => m.generateContent(prompt));
     const text = result.response.text();
     // Clean up response — remove markdown code blocks if present
     const cleaned = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
@@ -92,7 +110,7 @@ Provide your assessment in EXACTLY this JSON format (no markdown, no code blocks
         mimeType: mimeType,
       },
     };
-    const result = await m.generateContent([prompt, imagePart]);
+    const result = await withRetry(() => m.generateContent([prompt, imagePart]));
     const text = result.response.text();
     const cleaned = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
     return JSON.parse(cleaned);
@@ -124,7 +142,7 @@ ${hospitals.map(h => `- ID:${h.id} "${h.name}" | Beds: ${h.beds} | Distance: ${h
 Respond in JSON: {"recommendedHospitalId": 1, "reasoning": "Brief explanation", "alternativeId": 2}`;
 
   try {
-    const result = await m.generateContent(prompt);
+    const result = await withRetry(() => m.generateContent(prompt));
     const text = result.response.text();
     const cleaned = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
     return JSON.parse(cleaned);
