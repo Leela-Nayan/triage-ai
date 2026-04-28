@@ -1,24 +1,24 @@
-# TriageAI 🏥
+# TriageAI 
 
 > **AI-Powered Mass Casualty Triage System** — Built for Google Solution Challenge 2026
 
 TriageAI is an intelligent emergency triage system that leverages **Google Gemini's multimodal AI** to help first responders classify patients, optimize resource allocation, and coordinate hospital routing during mass casualty events.
 
-## 🎯 Problem Statement
+## Problem Statement
 
 During mass casualty events (train crashes, building collapses, stampedes), emergency rooms are overwhelmed. Triage decisions are made under extreme stress, leading to suboptimal resource allocation and preventable deaths. India faces approximately 450+ mass casualty events annually.
 
-## 💡 Solution
+## Solution
 
 TriageAI provides:
 
-- **🗣️ Voice-First Triage** — Paramedics describe injuries verbally; Gemini transcribes and auto-classifies severity (Red/Yellow/Green/Black)
-- **📸 Photo Assessment** — Snap a photo of injuries; Gemini Vision provides preliminary assessment
-- **📊 Real-Time Dashboard** — Hospital administrators see patient flow, resource utilization, and predicted surge
-- **🏥 Smart Hospital Routing** — AI-optimized patient-to-hospital routing based on severity, specialty needs, and distance
-- **📦 Resource Management** — Track ambulances, beds, surgeons, blood supply in real-time
+- **Voice-First Triage** — Paramedics describe injuries verbally; Gemini transcribes and auto-classifies severity (Red/Yellow/Green/Black)
+- **Photo Assessment** — Snap a photo of injuries; Gemini Vision provides preliminary assessment
+- **Real-Time Dashboard** — Hospital administrators see patient flow, resource utilization, and predicted surge
+- **Smart Hospital Routing** — AI-optimized patient-to-hospital routing based on severity, specialty needs, and distance
+- **Resource Management** — Track ambulances, beds, surgeons, blood supply in real-time
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Technology | Purpose |
 |---|---|
@@ -28,12 +28,12 @@ TriageAI provides:
 | **React + Vite** | Frontend framework |
 | **Google Cloud** | Infrastructure (via Firebase) |
 
-## 🎯 UN Sustainable Development Goals
+## UN Sustainable Development Goals
 
 - **SDG 3** — Good Health & Well-Being
 - **SDG 11** — Sustainable Cities & Communities
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 ┌─────────────────────────────────────────────┐
@@ -73,43 +73,20 @@ TriageAI provides:
 └─────────────────────────────────────────────┘
 ```
 
-## 🚀 Getting Started
 
-```bash
-# Clone the repository
-git clone https://github.com/Leela-Nayan/triage-ai.git
 
-# Install dependencies
-cd triage-ai
-npm install
+## Screenshots
 
-# Set up environment variables
-cp .env.example .env
-# Add your Gemini API key to .env
 
-# Start development server
-npm run dev
-```
 
-## 📸 Screenshots
+## Demo Video
 
-[Screenshots will be added]
 
-## 🎬 Demo Video
 
-[3-minute demo video link]
-
-## 👥 Team
+## Team
 
 - **Team Name:** Overwatch
-- **Team Leader:** Leela Nayan K.P.
+- **Team Leader:** Leela Nayan K.P
 - Rushikesh Yadav Vadlakonda
 - Y. Rithwik
 
-## 📄 License
-
-MIT License
-
----
-
-Built with ❤️ for **Google Solution Challenge 2026** | Powered by **Google Gemini**
