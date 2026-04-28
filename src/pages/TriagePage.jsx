@@ -17,68 +17,71 @@ export default function TriagePage() {
   const [patientAge, setPatientAge] = useState('');
   const [patientGender, setPatientGender] = useState('unknown');
   const [saved, setSaved] = useState(false);
-  const mediaRecorderRef = useRef(null);
-  const chunksRef = useRef([]);
+  const recognitionRef = useRef(null);
   const fileInputRef = useRef(null);
 
-  // Voice recording
+  // Voice recording — uses Web Speech API directly
   const startRecording = async () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    
+    if (!SpeechRecognition) {
+      alert('Speech recognition is not supported in your browser. Please use Chrome or Edge.');
+      return;
+    }
+
     try {
+      // Request mic permission first
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
-      chunksRef.current = [];
+      stream.getTracks().forEach(t => t.stop()); // Release immediately, we just needed permission
 
-      mediaRecorder.ondataavailable = (e) => {
-        if (e.data.size > 0) chunksRef.current.push(e.data);
-      };
-
-      mediaRecorder.onstop = async () => {
-        stream.getTracks().forEach(t => t.stop());
-      };
-
-      mediaRecorder.start();
-      setIsRecording(true);
-
-      // Use Web Speech API for real-time transcription
-      if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const recognition = new SpeechRecognition();
-        recognition.continuous = true;
-        recognition.interimResults = true;
-        recognition.lang = 'en-US';
-        
-        let finalTranscript = '';
-        recognition.onresult = (event) => {
-          let interim = '';
-          for (let i = event.resultIndex; i < event.results.length; i++) {
-            if (event.results[i].isFinal) {
-              finalTranscript += event.results[i][0].transcript + ' ';
-            } else {
-              interim += event.results[i][0].transcript;
-            }
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+      
+      let finalTranscript = '';
+      
+      recognition.onresult = (event) => {
+        let interim = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript + ' ';
+          } else {
+            interim += event.results[i][0].transcript;
           }
-          setDescription(finalTranscript + interim);
-        };
-        
-        recognition.onerror = (e) => {
-          console.warn('Speech recognition error:', e.error);
-        };
-        recognition.start();
-        mediaRecorderRef.current._recognition = recognition;
-      }
+        }
+        setDescription(finalTranscript.trim() + (interim ? ' ' + interim : ''));
+      };
+      
+      recognition.onerror = (e) => {
+        console.warn('Speech recognition error:', e.error);
+        if (e.error === 'not-allowed') {
+          alert('Microphone permission denied. Please allow microphone access.');
+        }
+      };
+
+      recognition.onend = () => {
+        // If still recording, restart (Chrome stops after silence)
+        if (isRecording && recognitionRef.current) {
+          try { recognitionRef.current.start(); } catch(e) {}
+        }
+      };
+
+      recognition.start();
+      recognitionRef.current = recognition;
+      setIsRecording(true);
+      setDescription(''); // Clear previous text
     } catch (err) {
       console.error('Microphone error:', err);
-      alert('Could not access microphone. Please check permissions.');
+      alert('Could not access microphone. Please check permissions in your browser settings.');
     }
   };
 
   const stopRecording = () => {
-    if (mediaRecorderRef.current) {
-      if (mediaRecorderRef.current._recognition) {
-        mediaRecorderRef.current._recognition.stop();
-      }
-      mediaRecorderRef.current.stop();
+    if (recognitionRef.current) {
+      recognitionRef.current.onend = null; // Prevent restart
+      recognitionRef.current.stop();
+      recognitionRef.current = null;
       setIsRecording(false);
     }
   };
